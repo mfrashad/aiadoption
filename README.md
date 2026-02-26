@@ -2,7 +2,9 @@
 
 Open data and interactive visualization of AI adoption rates across 16 countries.
 
-**Live site:** [aiadoption.dev](https://aiadoption.dev) _(coming soon)_
+**Live site:** [aiadoption-gray.vercel.app](https://aiadoption-gray.vercel.app)
+
+Part of the [aiforgood.my](https://aiforgood.my) project — a hub for open-source AI projects for good.
 
 ## What is this?
 
@@ -36,13 +38,13 @@ Inspired by [global-ai-adoption.netlify.app](https://global-ai-adoption.netlify.
 The dataset is available as a JSON file you can fetch directly:
 
 ```
-https://raw.githubusercontent.com/mfrashad/aiadoption/main/api/v1/countries.json
+https://aiadoption-gray.vercel.app/api/v1/countries.json
 ```
 
 ### Usage
 
 ```javascript
-const res = await fetch('https://raw.githubusercontent.com/mfrashad/aiadoption/main/api/v1/countries.json');
+const res = await fetch('https://aiadoption-gray.vercel.app/api/v1/countries.json');
 const data = await res.json();
 
 // Get all countries sorted by adoption rate
@@ -56,7 +58,7 @@ console.log(`${usa.name}: ${usa.adoption}% adoption, ${usa.population}M people`)
 ```python
 import requests
 
-data = requests.get('https://raw.githubusercontent.com/mfrashad/aiadoption/main/api/v1/countries.json').json()
+data = requests.get('https://aiadoption-gray.vercel.app/api/v1/countries.json').json()
 
 for country in sorted(data['countries'], key=lambda c: -c['adoption']):
     users = country['population'] * country['adoption'] / 100
