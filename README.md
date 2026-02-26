@@ -10,7 +10,7 @@ Part of the [aiforgood.my](https://aiforgood.my) project — a hub for open-sour
 
 An interactive dot-grid visualization showing how AI adoption varies dramatically across countries — from the UAE at 64% to Nigeria at 7%. Each dot represents 0.25% of a country's population, color-coded by adoption category.
 
-Inspired by [global-ai-adoption.netlify.app](https://global-ai-adoption.netlify.app/) which tracks global AI adoption over time. This project adapts that concept to compare adoption **by country**.
+Inspired by [global-ai-adoption.netlify.app](https://global-ai-adoption.netlify.app/) which tracks global AI adoption over time. This project focuses on comparing adoption **by country**.
 
 ## Countries covered
 

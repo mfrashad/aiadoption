@@ -667,6 +667,44 @@ function App() {
         )}
       </div>
 
+      {/* API Section */}
+      <div style={{borderTop:"1px solid #1a1a1a", paddingTop:20, marginBottom:20}}>
+        <h2 style={{fontFamily:FS, fontSize:16, fontWeight:700, marginBottom:8, textAlign:"center"}}>Open Data API</h2>
+        <p style={{fontFamily:FS, fontSize:12, color:"#8a857a", textAlign:"center", lineHeight:1.6, marginBottom:12}}>
+          All the data on this page is available as a free JSON API. Use it in your projects, research, or apps.
+        </p>
+        <div style={{
+          background:"#141414", border:"1px solid #222", borderRadius:6,
+          padding:"12px 16px", maxWidth:520, margin:"0 auto 12px",
+          fontFamily:FM, fontSize:11, color:"#6fcc84", wordBreak:"break-all", lineHeight:1.5,
+        }}>
+          <span style={{color:"#666"}}>GET</span>{" "}
+          <a href="/api/v1/countries.json" target="_blank" rel="noopener" style={{color:"#6fcc84"}}>
+            /api/v1/countries.json
+          </a>
+        </div>
+        <div style={{
+          background:"#141414", border:"1px solid #222", borderRadius:6,
+          padding:"12px 16px", maxWidth:520, margin:"0 auto 12px",
+          fontFamily:FM, fontSize:10, color:"#b0a998", lineHeight:1.7, whiteSpace:"pre-wrap",
+        }}>
+{`// Example usage
+fetch('/api/v1/countries.json')
+  .then(r => r.json())
+  .then(data => {
+    const top = data.countries
+      .sort((a, b) => b.adoption - a.adoption)
+      .slice(0, 5);
+    console.log(top);
+  });`}
+        </div>
+        <p style={{fontFamily:FM, fontSize:10, color:"#555", textAlign:"center", lineHeight:1.5}}>
+          Includes population, adoption rates, paid/free breakdown, AI workforce, investment data, and sources for 16 countries.
+          {" "}
+          <a href="https://github.com/mfrashad/aiadoption" target="_blank" rel="noopener">View on GitHub</a>
+        </p>
+      </div>
+
       {/* Footer */}
       <div style={{borderTop:"1px solid #1a1a1a", paddingTop:16, textAlign:"center"}}>
         <p style={{fontFamily:FM, fontSize:9, color:"#444", lineHeight:1.6, maxWidth:500, margin:"0 auto"}}>
@@ -676,7 +714,9 @@ function App() {
           See FAQ and sources for methodology details.
         </p>
         <p style={{fontFamily:FM, fontSize:9, color:"#333", marginTop:8}}>
-          Adapted from <a href="https://global-ai-adoption.netlify.app/" target="_blank" rel="noopener">global-ai-adoption.netlify.app</a>
+          Inspired by <a href="https://global-ai-adoption.netlify.app/" target="_blank" rel="noopener">global-ai-adoption.netlify.app</a>
+          {" \u00B7 "}
+          Part of <a href="https://aiforgood.my" target="_blank" rel="noopener">aiforgood.my</a>
         </p>
       </div>
     </div>
