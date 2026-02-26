@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Adoption by Country — 2025/26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script crossorigin src="https://unpkg.com/@babel/standalone@7/babel.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d0d0d;color:#e8e4de;font-family:'DM Sans','Inter',-apple-system,sans-serif;min-height:100vh;overflow-x:hidden}
+#root{max-width:760px;margin:0 auto;padding:24px 16px 60px}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#2a2a2a;border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#d4a843;cursor:pointer;border:none}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#d4a843;cursor:pointer;border:none}
+a{color:#d4a843;text-decoration:none}
+a:hover{text-decoration:underline}
+::selection{background:#d4a843;color:#0d0d0d}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const {useState, useMemo, useEffect, useRef, useCallback} = React;
+
+const FM = "'JetBrains Mono','SF Mono','Fira Code',monospace";
+const FS = "'DM Sans','Inter',sans-serif";
+const GRID = 400;
+const COLS = 20;
+
+const CATS = [
+  {id:"talent", label:"AI professionals & researchers", color:"#4a90d9", active:"#6aafee"},
+  {id:"paid",   label:"Paid AI subscribers",           color:"#d4a843", active:"#eec050"},
+  {id:"free",   label:"Free gen AI users",             color:"#5aaa6e", active:"#6fcc84"},
+  {id:"never",  label:"Never used AI",                 color:"#3d3b36", active:"#8a857a"},
+];
+const catColor = (id, sel) => {
+  const c = CATS.find(x=>x.id===id);
+  return sel === id || sel === null ? c.active : c.color;
+};
+
+const COUNTRIES = [
+  {
+    id:"uae", name:"UAE", flag:"\u{1F1E6}\u{1F1EA}", region:"Middle East",
+    pop:11.35, adoption:64.0, paid:5.0, aiWorkforce:0.8, researchers:0.02,
+    aiInvestment:"$2B+", microsoftRank:1,
+    highlight:"#1 globally in gen AI adoption rate at 64%",
+    detail:"Early government investment in digital infrastructure and AI skilling pays off"
+  },
+  {
+    id:"sg", name:"Singapore", flag:"\u{1F1F8}\u{1F1EC}", region:"Southeast Asia",
+    pop:6.11, adoption:60.9, paid:5.0, aiWorkforce:1.5, researchers:0.05,
+    aiInvestment:"$6.3B", microsoftRank:2,
+    highlight:"#2 globally; highest AI talent concentration per capita",
+    detail:"1.64% of workforce in AI roles — 2.45x the global average"
+  },
+  {
+    id:"fr", name:"France", flag:"\u{1F1EB}\u{1F1F7}", region:"Europe",
+    pop:68, adoption:44.0, paid:2.0, aiWorkforce:0.5, researchers:0.03,
+    aiInvestment:"$7B", microsoftRank:null,
+    highlight:"European AI leader, home to Mistral AI",
+    detail:"48% of financial sector already using AI tools"
+  },
+  {
+    id:"cn", name:"China", flag:"\u{1F1E8}\u{1F1F3}", region:"East Asia",
+    pop:1410, adoption:42.8, paid:2.0, aiWorkforce:0.3, researchers:0.002,
+    aiInvestment:"$9.3B", microsoftRank:null,
+    highlight:"602M gen AI users via domestic platforms (ChatGPT is banned)",
+    detail:"#1 globally in AI publications (23,695) and patents (35,423) in 2024"
+  },
+  {
+    id:"uk", name:"United Kingdom", flag:"\u{1F1EC}\u{1F1E7}", region:"Europe",
+    pop:68, adoption:40.5, paid:2.5, aiWorkforce:0.5, researchers:0.04,
+    aiInvestment:"$4.5B", microsoftRank:null,
+    highlight:"4th globally in ChatGPT traffic share",
+    detail:"Strong AI research base with hubs in London, Cambridge, and Oxford"
+  },
+  {
+    id:"au", name:"Australia", flag:"\u{1F1E6}\u{1F1FA}", region:"Oceania",
+    pop:27, adoption:38.9, paid:2.0, aiWorkforce:0.4, researchers:0.03,
+    aiInvestment:"$1B+", microsoftRank:null,
+    highlight:"High adoption driven by strong digital infrastructure",
+    detail:"49% adoption rate measured in Salesforce knowledge worker surveys"
+  },
+  {
+    id:"ca", name:"Canada", flag:"\u{1F1E8}\u{1F1E6}", region:"North America",
+    pop:41, adoption:35.0, paid:2.0, aiWorkforce:0.5, researchers:0.04,
+    aiInvestment:"$2B+", microsoftRank:null,
+    highlight:"Outpaces the US in adoption rate — birthplace of modern deep learning",
+    detail:"53% of the financial sector already using AI"
+  },
+  {
+    id:"my", name:"Malaysia", flag:"\u{1F1F2}\u{1F1FE}", region:"Southeast Asia",
+    pop:34.2, adoption:32.0, paid:1.5, aiWorkforce:0.3, researchers:0.01,
+    aiInvestment:"$2.2B", microsoftRank:null,
+    highlight:"79% of frontline workers integrating AI into their roles",
+    detail:"68% AI optimism rate — 16 points above the global average"
+  },
+  {
+    id:"de", name:"Germany", flag:"\u{1F1E9}\u{1F1EA}", region:"Europe",
+    pop:84, adoption:31.4, paid:1.5, aiWorkforce:0.5, researchers:0.03,
+    aiInvestment:"$910M", microsoftRank:null,
+    highlight:"43,000 AI specialists and growing",
+    detail:"46% financial sector AI adoption; strong industrial AI applications"
+  },
+  {
+    id:"kr", name:"South Korea", flag:"\u{1F1F0}\u{1F1F7}", region:"East Asia",
+    pop:52, adoption:30.7, paid:3.5, aiWorkforce:0.5, researchers:0.03,
+    aiInvestment:"$2B+", microsoftRank:18,
+    highlight:"#2 globally in paid ChatGPT subscribers, behind only the US",
+    detail:"80% growth in adoption rate since Oct 2024 — vs 35% global average"
+  },
+  {
+    id:"us", name:"United States", flag:"\u{1F1FA}\u{1F1F8}", region:"North America",
+    pop:347, adoption:28.3, paid:2.5, aiWorkforce:0.5, researchers:0.02,
+    aiInvestment:"$109.1B", microsoftRank:24,
+    highlight:"Only 28% adoption but #1 in AI investment ($109B) and model creation",
+    detail:"~60% of top AI experts worldwide; 40 notable AI models produced in 2024"
+  },
+  {
+    id:"id", name:"Indonesia", flag:"\u{1F1EE}\u{1F1E9}", region:"Southeast Asia",
+    pop:280, adoption:25.0, paid:0.5, aiWorkforce:0.1, researchers:0.005,
+    aiInvestment:"$1B+", microsoftRank:null,
+    highlight:"92% of knowledge workers report using AI, but infrastructure limits scale",
+    detail:"High download volumes but lower sustained adoption due to connectivity gaps"
+  },
+  {
+    id:"jp", name:"Japan", flag:"\u{1F1EF}\u{1F1F5}", region:"East Asia",
+    pop:124, adoption:19.1, paid:1.0, aiWorkforce:0.3, researchers:0.02,
+    aiInvestment:"$1B+", microsoftRank:null,
+    highlight:"5th in ChatGPT traffic but lowest daily usage rate (6%) among surveyed nations",
+    detail:"Only 1.9% enterprise AI adoption in core functions vs 6.1% in the US"
+  },
+  {
+    id:"in", name:"India", flag:"\u{1F1EE}\u{1F1F3}", region:"South Asia",
+    pop:1460, adoption:18.0, paid:0.3, aiWorkforce:0.15, researchers:0.005,
+    aiInvestment:"$4B+", microsoftRank:null,
+    highlight:"100M weekly ChatGPT users — #2 in traffic — but low per-capita adoption",
+    detail:"36% use ChatGPT daily (highest globally); 252% growth in AI talent since 2016"
+  },
+  {
+    id:"br", name:"Brazil", flag:"\u{1F1E7}\u{1F1F7}", region:"South America",
+    pop:216, adoption:16.0, paid:0.5, aiWorkforce:0.15, researchers:0.005,
+    aiInvestment:"$1B+", microsoftRank:null,
+    highlight:"#3 globally in ChatGPT traffic despite only ~16% population adoption",
+    detail:"30.8% year-over-year increase in AI hiring"
+  },
+  {
+    id:"ng", name:"Nigeria", flag:"\u{1F1F3}\u{1F1EC}", region:"Africa",
+    pop:230, adoption:7.0, paid:0.2, aiWorkforce:0.05, researchers:0.002,
+    aiInvestment:"<$100M", microsoftRank:null,
+    highlight:"600% growth in one year (1% to 7%) — fastest growth trajectory in Africa",
+    detail:"Only ~60% have electricity access; Africa's first OpenAI Academy at Univ. of Lagos"
+  },
+];
+
+const TICKER = [
+  "UAE leads globally with 64% gen AI adoption — nearly 2 in 3 working-age adults",
+  "India has 100M weekly ChatGPT users despite only ~18% population-level adoption",
+  "China's 602M gen AI users rely on domestic tools like DeepSeek — ChatGPT is banned there",
+  "The US attracts $109B in AI investment — 12x more than #2 China ($9.3B)",
+  "Nigeria's AI adoption grew 600% in one year, from 1% to 7%",
+  "South Korea is #2 in paid ChatGPT subscribers despite being #18 in overall adoption",
+  "Singapore has the world's highest AI talent density at 1.64% of its workforce",
+  "Japan has the lowest daily ChatGPT usage rate (6%) among all surveyed nations",
+  "Canada outpaces the US in gen AI adoption rate (35% vs 28.3%)",
+  "Only ~16% of the world's 8.3 billion people have ever used generative AI",
+];
+
+const FAQS = [
+  {
+    q: "Where does this data come from?",
+    a: "Population from UN World Population Prospects. Adoption rates from the Microsoft AI Diffusion Report (H2 2025), which measures % of working-age population that used any gen AI product via telemetry. China data from CNNIC (602M domestic gen AI users). ChatGPT traffic from DemandSage/SimilarWeb. AI talent data from OECD/LinkedIn. AI investment from Stanford HAI AI Index Report 2025."
+  },
+  {
+    q: "Why is the US ranked #24 in adoption despite leading in investment?",
+    a: "The Microsoft report measures working-age population adoption rate. The US has a massive population (347M), so even though it has the most AI users in absolute terms and dominates in investment ($109B), research, and model creation, the per-capita adoption rate is lower than smaller, tech-forward nations like the UAE and Singapore."
+  },
+  {
+    q: "What counts as 'AI professionals & researchers'?",
+    a: "This combines two groups: AI/ML engineers and data scientists working professionally in the field (from LinkedIn talent data), and academic AI researchers publishing in the field (from Stanford HAI data). These categories overlap with AI users but represent people who work with AI, not just use it."
+  },
+  {
+    q: "How are paid vs free users estimated?",
+    a: "Globally, ~19% of ChatGPT users pay for a subscription (Backlinko). We adjust per country: South Korea (#2 in paid subs) and high-income nations like UAE/Singapore skew higher. Developing nations skew lower. For China, 'paid' reflects domestic platform subscriptions, not ChatGPT."
+  },
+  {
+    q: "Why is China's data different from other countries?",
+    a: "ChatGPT and most Western AI tools are banned in China. China's 602M gen AI users (CNNIC, Dec 2025) use domestic alternatives: DeepSeek, Qwen, Doubao, Ernie Bot, and others. The 42.8% adoption rate comes from CNNIC rather than Microsoft's telemetry."
+  },
+  {
+    q: "How reliable are these numbers?",
+    a: "Adoption metrics vary significantly by methodology. The Microsoft report uses telemetry-adjusted estimates. Survey data (McKinsey, Salesforce) often shows higher rates because it samples knowledge workers. ChatGPT traffic share reflects only one platform. We've tried to use the most authoritative source for each metric and note caveats where relevant."
+  },
+];
+
+const SOURCES = [
+  {n:"Microsoft AI Diffusion Report H2 2025", u:"https://www.microsoft.com/en-us/corporate-responsibility/topics/ai-economy-institute/reports/global-ai-adoption-2025/"},
+  {n:"Stanford HAI AI Index Report 2025", u:"https://hai.stanford.edu/ai-index/2025-ai-index-report"},
+  {n:"DemandSage ChatGPT Statistics (Feb 2026)", u:"https://www.demandsage.com/chatgpt-statistics/"},
+  {n:"CNBC/LinkedIn AI Talent Data", u:"https://www.cnbc.com/2025/04/11/linkedin-these-countries-have-a-high-concentration-of-ai-talent.html"},
+  {n:"Visual Capitalist: Global AI Investment", u:"https://www.visualcapitalist.com/visualizing-global-ai-investment-by-country/"},
+  {n:"McKinsey State of AI 2025", u:"https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai"},
+  {n:"CNNIC China Gen AI Users Report", u:"https://www.chinadaily.com.cn/a/202602/05/WS6984014ca310d6866eb37a16.html"},
+  {n:"Deloitte Gen AI in Asia Pacific", u:"https://www.deloitte.com/southeast-asia/en/Industries/technology/research/generative-ai-asia-pacific.html"},
+  {n:"OECD AI Adoption Data (Jan 2026)", u:"https://www.oecd.org/en/about/news/announcements/2026/01/ai-use-by-individuals-surges-across-the-oecd-as-adoption-by-firms-continues-to-expand.html"},
+  {n:"IMF AI Preparedness Index", u:"https://www.imf.org/external/datamapper/datasets/AIPI"},
+  {n:"UN World Population Prospects", u:"https://population.un.org/wpp/"},
+  {n:"Korea Herald: S.Korea Paid ChatGPT Users", u:"https://www.koreaherald.com/article/10500190"},
+  {n:"Backlinko ChatGPT Stats", u:"https://backlinko.com/chatgpt-stats"},
+  {n:"Rest of World: Gen AI Adoption", u:"https://restofworld.org/2026/countries-generative-ai-adoption/"},
+];
+
+// --- Utilities ---
+function fmtPop(m) {
+  if (m >= 1000) return (m/1000).toFixed(m>=1400?2:1) + "B";
+  if (m >= 1) return m.toFixed(m>=100?0:1) + "M";
+  return Math.round(m*1000) + "K";
+}
+function fmtNum(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(1) + "B";
+  if (n >= 1e6) return (n/1e6).toFixed(n>=1e8?0:1) + "M";
+  if (n >= 1e3) return (n/1e3).toFixed(n>=1e5?0:0) + "K";
+  return n.toFixed(0);
+}
+function fmtPct(p) { return p < 0.1 ? "<0.1%" : p.toFixed(1) + "%"; }
+
+function computeDots(country) {
+  const c = country;
+  const talentPct = c.aiWorkforce + c.researchers;
+  const paidPct = c.paid;
+  const freePct = Math.max(0, c.adoption - paidPct - talentPct);
+  const neverPct = Math.max(0, 100 - c.adoption);
+
+  let talentDots = Math.max(1, Math.round((talentPct / 100) * GRID));
+  let paidDots = Math.max(1, Math.round((paidPct / 100) * GRID));
+  let freeDots = Math.max(0, Math.round((freePct / 100) * GRID));
+  let neverDots = GRID - talentDots - paidDots - freeDots;
+
+  if (neverDots < 0) {
+    freeDots += neverDots;
+    neverDots = 0;
+  }
+
+  const arr = [];
+  for (let i = 0; i < talentDots; i++) arr.push("talent");
+  for (let i = 0; i < paidDots; i++) arr.push("paid");
+  for (let i = 0; i < freeDots; i++) arr.push("free");
+  for (let i = 0; i < neverDots; i++) arr.push("never");
+  return { arr, talentPct, paidPct, freePct, neverPct, talentDots, paidDots, freeDots, neverDots };
+}
+
+// --- Main Component ---
+function App() {
+  const [selId, setSelId] = useState("us");
+  const [hovCat, setHovCat] = useState(null);
+  const [showSrc, setShowSrc] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(null);
+  const [fi, setFi] = useState(0);
+  const [fv, setFv] = useState(true);
+  const [playing, setPlaying] = useState(false);
+  const [sortBy, setSortBy] = useState("adoption");
+  const playRef = useRef(null);
+  const tickerRef = useRef(null);
+
+  const country = COUNTRIES.find(c => c.id === selId);
+  const dots = useMemo(() => computeDots(country), [selId]);
+
+  const sorted = useMemo(() => {
+    const arr = [...COUNTRIES];
+    if (sortBy === "adoption") arr.sort((a,b) => b.adoption - a.adoption);
+    else if (sortBy === "population") arr.sort((a,b) => b.pop - a.pop);
+    else arr.sort((a,b) => a.name.localeCompare(b.name));
+    return arr;
+  }, [sortBy]);
+
+  // Ticker rotation
+  useEffect(() => {
+    tickerRef.current = setInterval(() => {
+      setFv(false);
+      setTimeout(() => {
+        setFi(i => (i + 1) % TICKER.length);
+        setFv(true);
+      }, 400);
+    }, 6000);
+    return () => clearInterval(tickerRef.current);
+  }, []);
+
+  // Play through countries
+  const play = useCallback(() => {
+    if (playing) { setPlaying(false); return; }
+    setPlaying(true);
+    const order = [...COUNTRIES].sort((a,b) => a.adoption - b.adoption);
+    let idx = 0;
+    setSelId(order[0].id);
+    const step = () => {
+      idx++;
+      if (idx >= order.length) { setPlaying(false); return; }
+      setSelId(order[idx].id);
+      const delay = idx < order.length - 3 ? 1200 : 2000;
+      playRef.current = setTimeout(step, delay);
+    };
+    playRef.current = setTimeout(step, 1500);
+  }, [playing]);
+
+  useEffect(() => {
+    return () => { if (playRef.current) clearTimeout(playRef.current); };
+  }, []);
+
+  const stopPlay = () => {
+    setPlaying(false);
+    if (playRef.current) clearTimeout(playRef.current);
+  };
+
+  const selectCountry = (id) => {
+    stopPlay();
+    setSelId(id);
+  };
+
+  // Category stats
+  const catStats = useMemo(() => {
+    const popM = country.pop;
+    const t = country.aiWorkforce + country.researchers;
+    return {
+      talent: { pct: t, abs: popM * t / 100 },
+      paid:   { pct: country.paid, abs: popM * country.paid / 100 },
+      free:   { pct: Math.max(0, country.adoption - country.paid - t), abs: popM * Math.max(0, country.adoption - country.paid - t) / 100 },
+      never:  { pct: Math.max(0, 100 - country.adoption), abs: popM * Math.max(0, 100 - country.adoption) / 100 },
+    };
+  }, [selId]);
+
+  const totalAiUsers = country.pop * country.adoption / 100;
+
+  return (
+    <div>
+      {/* Title */}
+      <h1 style={{fontFamily:FS, fontWeight:700, fontSize:"clamp(22px, 5vw, 38px)", textAlign:"center", marginBottom:4, lineHeight:1.2, animation:"fadeIn 0.6s ease"}}>
+        AI Adoption by Country
+      </h1>
+      <p style={{fontFamily:FM, fontSize:11, textAlign:"center", color:"#8a857a", marginBottom:4}}>
+        Each dot = 0.25% of country's population
+      </p>
+      <p style={{fontFamily:FM, fontSize:12, textAlign:"center", color:"#b0a998", marginBottom:20}}>
+        {country.flag} {country.name}: <span style={{color:"#e8e4de", fontWeight:500}}>{fmtPop(country.pop)}</span> people
+        {" \u2022 "}
+        <span style={{color:"#6fcc84"}}>{fmtPop(totalAiUsers)}</span> AI users
+        {" "}
+        <span style={{color:"#8a857a"}}>({country.adoption.toFixed(1)}%)</span>
+      </p>
+
+      {/* Play button + Country Slider */}
+      <div style={{display:"flex", alignItems:"center", gap:12, marginBottom:8}}>
+        <button
+          onClick={play}
+          style={{
+            width:36, height:36, borderRadius:"50%", border:"2px solid #d4a843",
+            background: playing ? "#d4a843" : "transparent", cursor:"pointer",
+            display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0,
+            transition:"all 0.2s"
+          }}
+        >
+          {playing ? (
+            <span style={{fontFamily:FM, fontSize:12, color:"#0d0d0d", fontWeight:700}}>||</span>
+          ) : (
+            <span style={{display:"inline-block", width:0, height:0, borderTop:"6px solid transparent", borderBottom:"6px solid transparent", borderLeft:"10px solid #d4a843", marginLeft:2}} />
+          )}
+        </button>
+        <input
+          type="range"
+          min={0}
+          max={sorted.length - 1}
+          value={sorted.findIndex(c => c.id === selId)}
+          onChange={e => { stopPlay(); setSelId(sorted[parseInt(e.target.value)].id); }}
+          style={{flex:1}}
+        />
+      </div>
+
+      {/* Country pills */}
+      <div style={{display:"flex", flexWrap:"wrap", gap:6, justifyContent:"center", marginBottom:6}}>
+        {sorted.map(c => (
+          <button
+            key={c.id}
+            onClick={() => selectCountry(c.id)}
+            style={{
+              fontFamily:FM, fontSize:11, padding:"4px 10px", borderRadius:20,
+              border: c.id === selId ? "1.5px solid #d4a843" : "1.5px solid #333",
+              background: c.id === selId ? "rgba(212,168,67,0.15)" : "transparent",
+              color: c.id === selId ? "#eec050" : "#8a857a",
+              cursor:"pointer", transition:"all 0.2s", whiteSpace:"nowrap",
+            }}
+            onMouseEnter={e => { if (c.id !== selId) { e.target.style.borderColor="#555"; e.target.style.color="#b0a998"; }}}
+            onMouseLeave={e => { if (c.id !== selId) { e.target.style.borderColor="#333"; e.target.style.color="#8a857a"; }}}
+          >
+            {c.flag} {c.name}
+          </button>
+        ))}
+      </div>
+
+      {/* Sort controls */}
+      <div style={{display:"flex", justifyContent:"center", gap:16, marginBottom:16}}>
+        {[["adoption","by adoption"], ["population","by population"], ["name","A\u2013Z"]].map(([v,l]) => (
+          <button
+            key={v}
+            onClick={() => setSortBy(v)}
+            style={{
+              fontFamily:FM, fontSize:10, color: sortBy===v ? "#d4a843" : "#666",
+              background:"none", border:"none", cursor:"pointer",
+              borderBottom: sortBy===v ? "1px solid #d4a843" : "1px solid transparent",
+              paddingBottom:2, transition:"all 0.2s",
+            }}
+          >{l}</button>
+        ))}
+      </div>
+
+      {/* Highlight */}
+      <p style={{
+        fontFamily:FM, fontSize:11, textAlign:"center", color:"#d4a843",
+        marginBottom:16, minHeight:32, lineHeight:1.4, padding:"0 12px",
+        transition:"opacity 0.3s", opacity: 1,
+      }}>
+        {country.highlight}
+      </p>
+
+      {/* Dot Grid */}
+      <div style={{
+        display:"grid",
+        gridTemplateColumns:`repeat(${COLS}, 1fr)`,
+        gap:2,
+        maxWidth:340,
+        margin:"0 auto 20px",
+        padding:4,
+      }}>
+        {dots.arr.map((cat, i) => {
+          const isHov = hovCat === null || hovCat === cat;
+          const c = CATS.find(x=>x.id===cat);
+          return (
+            <div
+              key={i}
+              style={{
+                aspectRatio:"1/1",
+                borderRadius:2,
+                backgroundColor: isHov ? c.active : c.color,
+                opacity: isHov ? (hovCat===cat ? 1 : 0.75) : 0.06,
+                transition:`background-color 0.35s ease ${i*1.5}ms, opacity 0.3s ease`,
+              }}
+            />
+          );
+        })}
+      </div>
+
+      {/* Legend */}
+      <div style={{display:"flex", flexWrap:"wrap", justifyContent:"center", gap:"8px 20px", marginBottom:8, maxWidth:520, margin:"0 auto 20px"}}>
+        {CATS.map(cat => {
+          const s = catStats[cat.id];
+          return (
+            <div
+              key={cat.id}
+              style={{
+                display:"flex", alignItems:"center", gap:6, cursor:"pointer",
+                opacity: hovCat === null || hovCat === cat.id ? 1 : 0.3,
+                transition:"opacity 0.2s",
+              }}
+              onMouseEnter={() => setHovCat(cat.id)}
+              onMouseLeave={() => setHovCat(null)}
+            >
+              <div style={{width:10, height:10, borderRadius:1.5, backgroundColor:cat.active, flexShrink:0}} />
+              <div>
+                <span style={{fontFamily:FS, fontSize:11, color:"#b0a998"}}>{cat.label}</span>
+                <span style={{fontFamily:FM, fontSize:11, color:"#e8e4de", marginLeft:6}}>
+                  {fmtPct(s.pct)}
+                </span>
+                <span style={{fontFamily:FM, fontSize:10, color:"#666", marginLeft:4}}>
+                  ({fmtPop(s.abs)})
+                </span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Detail */}
+      <p style={{fontFamily:FS, fontSize:11, textAlign:"center", color:"#666", marginBottom:20, lineHeight:1.4, padding:"0 20px"}}>
+        {country.detail}
+      </p>
+
+      {/* Key stats row */}
+      <div style={{display:"flex", justifyContent:"center", gap:24, flexWrap:"wrap", marginBottom:28}}>
+        {[
+          {label:"Population", value:fmtPop(country.pop)},
+          {label:"AI Users", value:fmtPop(totalAiUsers)},
+          {label:"Adoption", value:country.adoption.toFixed(1)+"%"},
+          {label:"AI Investment", value:country.aiInvestment},
+        ].map(({label,value}) => (
+          <div key={label} style={{textAlign:"center"}}>
+            <div style={{fontFamily:FM, fontSize:18, fontWeight:700, color:"#e8e4de"}}>{value}</div>
+            <div style={{fontFamily:FM, fontSize:9, color:"#666", textTransform:"uppercase", letterSpacing:1}}>{label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Ticker */}
+      <div style={{
+        borderTop:"1px solid #1a1a1a", borderBottom:"1px solid #1a1a1a",
+        padding:"10px 16px", marginBottom:28, textAlign:"center",
+        minHeight:36,
+      }}>
+        <p style={{
+          fontFamily:FM, fontSize:10, color:"#8a857a", lineHeight:1.5,
+          opacity: fv ? 1 : 0, transition:"opacity 0.4s ease",
+        }}>
+          {TICKER[fi]}
+        </p>
+      </div>
+
+      {/* Comparison Bars */}
+      <h2 style={{fontFamily:FS, fontSize:16, fontWeight:700, marginBottom:16, textAlign:"center"}}>
+        Comparison
+      </h2>
+      <div style={{maxWidth:600, margin:"0 auto 28px"}}>
+        {sorted.map(c => {
+          const isSel = c.id === selId;
+          const barW = (c.adoption / 70) * 100; // 70% max scale
+          return (
+            <div
+              key={c.id}
+              onClick={() => selectCountry(c.id)}
+              style={{
+                display:"flex", alignItems:"center", gap:8, marginBottom:4,
+                cursor:"pointer", padding:"3px 0",
+                opacity: isSel ? 1 : 0.6,
+                transition:"opacity 0.2s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+              onMouseLeave={e => { if (!isSel) e.currentTarget.style.opacity = "0.6"; }}
+            >
+              <div style={{width:80, fontFamily:FM, fontSize:10, color: isSel ? "#eec050" : "#8a857a", textAlign:"right", flexShrink:0}}>
+                {c.flag} {c.name}
+              </div>
+              <div style={{flex:1, height:14, background:"#1a1a1a", borderRadius:2, overflow:"hidden", position:"relative"}}>
+                {/* Stacked bar segments */}
+                {(() => {
+                  const d = computeDots(c);
+                  const segments = [
+                    {id:"talent", pct: d.talentPct},
+                    {id:"paid", pct: d.paidPct},
+                    {id:"free", pct: d.freePct},
+                  ];
+                  let offset = 0;
+                  return segments.map(seg => {
+                    const w = (seg.pct / 70) * 100;
+                    const left = offset;
+                    offset += w;
+                    const cat = CATS.find(x=>x.id===seg.id);
+                    return (
+                      <div
+                        key={seg.id}
+                        style={{
+                          position:"absolute", top:0, bottom:0,
+                          left: left+"%", width: w+"%",
+                          backgroundColor: isSel ? cat.active : cat.color,
+                          transition:"width 0.4s ease, background-color 0.3s",
+                        }}
+                      />
+                    );
+                  });
+                })()}
+              </div>
+              <div style={{width:40, fontFamily:FM, fontSize:10, color: isSel ? "#e8e4de" : "#666", flexShrink:0}}>
+                {c.adoption.toFixed(1)}%
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Absolute Users Comparison */}
+      <h2 style={{fontFamily:FS, fontSize:16, fontWeight:700, marginBottom:16, textAlign:"center"}}>
+        Total AI Users (absolute)
+      </h2>
+      <div style={{maxWidth:600, margin:"0 auto 28px"}}>
+        {[...COUNTRIES].sort((a,b) => (b.pop*b.adoption) - (a.pop*a.adoption)).map(c => {
+          const users = c.pop * c.adoption / 100;
+          const maxUsers = 602; // China
+          const isSel = c.id === selId;
+          return (
+            <div
+              key={c.id}
+              onClick={() => selectCountry(c.id)}
+              style={{
+                display:"flex", alignItems:"center", gap:8, marginBottom:4,
+                cursor:"pointer", padding:"3px 0",
+                opacity: isSel ? 1 : 0.6,
+                transition:"opacity 0.2s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.opacity = "1"}
+              onMouseLeave={e => { if (!isSel) e.currentTarget.style.opacity = "0.6"; }}
+            >
+              <div style={{width:80, fontFamily:FM, fontSize:10, color: isSel ? "#eec050" : "#8a857a", textAlign:"right", flexShrink:0}}>
+                {c.flag} {c.name}
+              </div>
+              <div style={{flex:1, height:14, background:"#1a1a1a", borderRadius:2, overflow:"hidden"}}>
+                <div style={{
+                  height:"100%", width: (users/maxUsers*100)+"%",
+                  backgroundColor: isSel ? "#6fcc84" : "#5aaa6e",
+                  borderRadius:2,
+                  transition:"width 0.4s ease",
+                }} />
+              </div>
+              <div style={{width:48, fontFamily:FM, fontSize:10, color: isSel ? "#e8e4de" : "#666", flexShrink:0}}>
+                {fmtPop(users)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* FAQ */}
+      <div style={{borderTop:"1px solid #1a1a1a", paddingTop:20, marginBottom:20}}>
+        <h2 style={{fontFamily:FS, fontSize:16, fontWeight:700, marginBottom:12, textAlign:"center"}}>FAQ</h2>
+        {FAQS.map((f,i) => (
+          <div key={i} style={{borderBottom:"1px solid #1a1a1a", padding:"10px 0"}}>
+            <button
+              onClick={() => setFaqOpen(faqOpen === i ? null : i)}
+              style={{
+                background:"none", border:"none", color:"#b0a998", cursor:"pointer",
+                fontFamily:FS, fontSize:13, textAlign:"left", width:"100%",
+                display:"flex", justifyContent:"space-between", alignItems:"center",
+              }}
+            >
+              {f.q}
+              <span style={{fontFamily:FM, fontSize:14, color:"#666", marginLeft:8, flexShrink:0, transition:"transform 0.2s", transform: faqOpen===i?"rotate(45deg)":"rotate(0)"}}>+</span>
+            </button>
+            {faqOpen === i && (
+              <p style={{fontFamily:FS, fontSize:12, color:"#666", lineHeight:1.6, marginTop:8, padding:"0 4px"}}>
+                {f.a}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Sources */}
+      <div style={{marginBottom:20}}>
+        <button
+          onClick={() => setShowSrc(!showSrc)}
+          style={{
+            fontFamily:FM, fontSize:11, color:"#666", background:"none",
+            border:"1px solid #333", borderRadius:4, padding:"6px 14px",
+            cursor:"pointer", display:"block", margin:"0 auto",
+            transition:"all 0.2s",
+          }}
+          onMouseEnter={e => { e.target.style.borderColor="#555"; e.target.style.color="#8a857a"; }}
+          onMouseLeave={e => { e.target.style.borderColor="#333"; e.target.style.color="#666"; }}
+        >
+          {showSrc ? "Hide" : "Show"} Sources ({SOURCES.length})
+        </button>
+        {showSrc && (
+          <ol style={{fontFamily:FM, fontSize:10, color:"#666", lineHeight:1.8, marginTop:12, paddingLeft:20}}>
+            {SOURCES.map((s,i) => (
+              <li key={i}><a href={s.u} target="_blank" rel="noopener">{s.n}</a></li>
+            ))}
+          </ol>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div style={{borderTop:"1px solid #1a1a1a", paddingTop:16, textAlign:"center"}}>
+        <p style={{fontFamily:FM, fontSize:9, color:"#444", lineHeight:1.6, maxWidth:500, margin:"0 auto"}}>
+          Data compiled from multiple sources with different methodologies.
+          Adoption rates primarily from Microsoft AI Diffusion Report (H2 2025) measuring working-age population gen AI usage.
+          Paid/free splits and AI workforce sizes are estimates based on aggregate data.
+          See FAQ and sources for methodology details.
+        </p>
+        <p style={{fontFamily:FM, fontSize:9, color:"#333", marginTop:8}}>
+          Adapted from <a href="https://global-ai-adoption.netlify.app/" target="_blank" rel="noopener">global-ai-adoption.netlify.app</a>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
