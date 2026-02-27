@@ -74,15 +74,15 @@ const COUNTRIES = [
   },
   {
     id:"uk", name:"United Kingdom", flag:"\u{1F1EC}\u{1F1E7}", region:"Europe",
-    pop:68, adoption:40.5, paid:2.5, aiWorkforce:0.5, researchers:0.04,
-    aiInvestment:"$4.5B", microsoftRank:null,
-    highlight:"4th globally in ChatGPT traffic share",
+    pop:68, adoption:38.9, paid:2.5, aiWorkforce:0.5, researchers:0.04,
+    aiInvestment:"$4.5B", microsoftRank:9,
+    highlight:"Ranked #9 globally — 4th in ChatGPT traffic share",
     detail:"Strong AI research base with hubs in London, Cambridge, and Oxford"
   },
   {
     id:"au", name:"Australia", flag:"\u{1F1E6}\u{1F1FA}", region:"Oceania",
-    pop:27, adoption:38.9, paid:2.0, aiWorkforce:0.4, researchers:0.03,
-    aiInvestment:"$1B+", microsoftRank:null,
+    pop:27, adoption:36.9, paid:2.0, aiWorkforce:0.4, researchers:0.03,
+    aiInvestment:"$1B+", microsoftRank:11,
     highlight:"High adoption driven by strong digital infrastructure",
     detail:"49% adoption rate measured in Salesforce knowledge worker surveys"
   },
@@ -95,16 +95,16 @@ const COUNTRIES = [
   },
   {
     id:"my", name:"Malaysia", flag:"\u{1F1F2}\u{1F1FE}", region:"Southeast Asia",
-    pop:34.2, adoption:32.0, paid:1.5, aiWorkforce:0.3, researchers:0.01,
+    pop:34.2, adoption:19.7, paid:1.0, aiWorkforce:0.3, researchers:0.01,
     aiInvestment:"$2.2B", microsoftRank:null,
     highlight:"79% of frontline workers integrating AI into their roles",
     detail:"68% AI optimism rate — 16 points above the global average"
   },
   {
     id:"de", name:"Germany", flag:"\u{1F1E9}\u{1F1EA}", region:"Europe",
-    pop:84, adoption:31.4, paid:1.5, aiWorkforce:0.5, researchers:0.03,
-    aiInvestment:"$910M", microsoftRank:null,
-    highlight:"43,000 AI specialists and growing",
+    pop:84, adoption:28.6, paid:1.5, aiWorkforce:0.5, researchers:0.03,
+    aiInvestment:"$910M", microsoftRank:21,
+    highlight:"Ranked #21 globally — 43,000 AI specialists and growing",
     detail:"46% financial sector AI adoption; strong industrial AI applications"
   },
   {
@@ -123,7 +123,7 @@ const COUNTRIES = [
   },
   {
     id:"id", name:"Indonesia", flag:"\u{1F1EE}\u{1F1E9}", region:"Southeast Asia",
-    pop:280, adoption:25.0, paid:0.5, aiWorkforce:0.1, researchers:0.005,
+    pop:280, adoption:12.7, paid:0.3, aiWorkforce:0.1, researchers:0.005,
     aiInvestment:"$1B+", microsoftRank:null,
     highlight:"92% of knowledge workers report using AI, but infrastructure limits scale",
     detail:"High download volumes but lower sustained adoption due to connectivity gaps"
@@ -137,33 +137,33 @@ const COUNTRIES = [
   },
   {
     id:"in", name:"India", flag:"\u{1F1EE}\u{1F1F3}", region:"South Asia",
-    pop:1460, adoption:18.0, paid:0.3, aiWorkforce:0.15, researchers:0.005,
+    pop:1460, adoption:15.7, paid:0.3, aiWorkforce:0.15, researchers:0.005,
     aiInvestment:"$4B+", microsoftRank:null,
-    highlight:"100M weekly ChatGPT users — #2 in traffic — but low per-capita adoption",
+    highlight:"100M weekly ChatGPT users — #2 in traffic — but only 15.7% population adoption",
     detail:"36% use ChatGPT daily (highest globally); 252% growth in AI talent since 2016"
   },
   {
     id:"br", name:"Brazil", flag:"\u{1F1E7}\u{1F1F7}", region:"South America",
-    pop:216, adoption:16.0, paid:0.5, aiWorkforce:0.15, researchers:0.005,
+    pop:216, adoption:17.1, paid:0.5, aiWorkforce:0.15, researchers:0.005,
     aiInvestment:"$1B+", microsoftRank:null,
-    highlight:"#3 globally in ChatGPT traffic despite only ~16% population adoption",
+    highlight:"#3 globally in ChatGPT traffic despite only ~17% population adoption",
     detail:"30.8% year-over-year increase in AI hiring"
   },
   {
     id:"ng", name:"Nigeria", flag:"\u{1F1F3}\u{1F1EC}", region:"Africa",
-    pop:230, adoption:7.0, paid:0.2, aiWorkforce:0.05, researchers:0.002,
+    pop:230, adoption:9.3, paid:0.2, aiWorkforce:0.05, researchers:0.002,
     aiInvestment:"<$100M", microsoftRank:null,
-    highlight:"600% growth in one year (1% to 7%) — fastest growth trajectory in Africa",
+    highlight:"Fastest growth trajectory in Africa — rising from under 3% to 9.3% in two years",
     detail:"Only ~60% have electricity access; Africa's first OpenAI Academy at Univ. of Lagos"
   },
 ];
 
 const TICKER = [
   "UAE leads globally with 64% gen AI adoption — nearly 2 in 3 working-age adults",
-  "India has 100M weekly ChatGPT users despite only ~18% population-level adoption",
+  "India has 100M weekly ChatGPT users despite only ~16% population-level adoption",
   "China's 602M gen AI users rely on domestic tools like DeepSeek — ChatGPT is banned there",
   "The US attracts $109B in AI investment — 12x more than #2 China ($9.3B)",
-  "Nigeria's AI adoption grew 600% in one year, from 1% to 7%",
+  "Nigeria's AI adoption nearly tripled in two years — now at 9.3%, the fastest growth in Africa",
   "South Korea is #2 in paid ChatGPT subscribers despite being #18 in overall adoption",
   "Singapore has the world's highest AI talent density at 1.64% of its workforce",
   "Japan has the lowest daily ChatGPT usage rate (6%) among all surveyed nations",
@@ -174,27 +174,35 @@ const TICKER = [
 const FAQS = [
   {
     q: "Where does this data come from?",
-    a: "Population from UN World Population Prospects. Adoption rates from the Microsoft AI Diffusion Report (H2 2025), which measures % of working-age population that used any gen AI product via telemetry. China data from CNNIC (602M domestic gen AI users). ChatGPT traffic from DemandSage/SimilarWeb. AI talent data from OECD/LinkedIn. AI investment from Stanford HAI AI Index Report 2025."
+    a: "Multiple sources, each covering different aspects:\n\n• Adoption rates: Microsoft AI Diffusion Report (H2 2025), which uses Windows desktop telemetry to track visits to 20+ gen AI services — not just Microsoft products, but also ChatGPT, Claude, Gemini, Perplexity, and others (see full list in their Appendix A). The telemetry is then scaled up using mobile-to-desktop traffic ratios from StatCounter.\n\n• China data: CNNIC (China Internet Network Information Center) semi-annual survey of ~30,000 respondents across all 31 provinces, since Western tools like ChatGPT are banned in China and Microsoft's telemetry doesn't capture domestic platforms.\n\n• Population: UN World Population Prospects 2024 revision.\n\n• AI talent & workforce: OECD/LinkedIn labor data on AI/ML job roles.\n\n• AI investment: Stanford HAI AI Index Report 2025.\n\n• ChatGPT-specific stats: DemandSage, which aggregates from SimilarWeb traffic estimates, OpenAI announcements, and app store data."
+  },
+  {
+    q: "Does the Microsoft report only track Microsoft products like Copilot and Bing?",
+    a: "No. The Microsoft AI Diffusion Report tracks visits to 20+ generative AI services through anonymized Windows desktop telemetry. The tracked services include ChatGPT (OpenAI), Claude (Anthropic), Gemini (Google), Copilot (Microsoft), Perplexity, and many others listed in their technical paper's Appendix A. When they report that '28.3% of the US population uses gen AI,' that includes users of any of these platforms, not just Microsoft's own products.\n\nThe methodology works by observing which AI websites Windows users visit from their devices, applying a 90-minute monthly minimum threshold (roughly 3 minutes/day), then scaling for mobile usage and non-Windows devices."
+  },
+  {
+    q: "What are the limitations of this data?",
+    a: "Several important caveats:\n\n• Desktop bias: The Microsoft report starts from Windows telemetry, which systematically undercounts mobile-first populations. In developing countries where most internet access is through smartphones, actual AI usage may be higher than reported.\n\n• 90-minute threshold: Only users with at least 90 minutes of monthly AI usage are counted. This excludes casual or exploratory users — the exact population that signals early-stage adoption in emerging markets.\n\n• Domestic platforms missed: Countries with strong local AI ecosystems (China, Russia) appear to have lower adoption in Microsoft's data because usage happens on platforms outside the Western ecosystem. For China, we use CNNIC data instead, but this gap exists for other countries too.\n\n• Enterprise & open-source AI invisible: Internal corporate AI tools, on-premises deployments, and locally-run open-source models (Llama, Mistral, etc.) are not captured by any web telemetry.\n\n• No quality distinction: A teenager asking ChatGPT to write a birthday message counts the same as a researcher using Claude for drug interaction analysis.\n\n• Opt-in rates vary: Windows telemetry opt-in rates differ significantly by country, especially in Europe where privacy regulations like GDPR reduce the sample."
   },
   {
     q: "Why is the US ranked #24 in adoption despite leading in investment?",
-    a: "The Microsoft report measures working-age population adoption rate. The US has a massive population (347M), so even though it has the most AI users in absolute terms and dominates in investment ($109B), research, and model creation, the per-capita adoption rate is lower than smaller, tech-forward nations like the UAE and Singapore."
+    a: "The adoption rate measures the percentage of the working-age population using gen AI tools. The US has a massive population (347M), so even though it has the most AI users in absolute terms and dominates in investment ($109B — 12x more than #2 China), research, and model creation (~40 notable AI models in 2024), a smaller share of its total population has adopted gen AI compared to smaller, tech-forward nations like UAE (11M people, 64% adoption) and Singapore (6M people, 61% adoption). The absolute vs. per-capita distinction is key — the US is #1 in AI infrastructure but mid-pack in population-level penetration."
   },
   {
     q: "What counts as 'AI professionals & researchers'?",
-    a: "This combines two groups: AI/ML engineers and data scientists working professionally in the field (from LinkedIn talent data), and academic AI researchers publishing in the field (from Stanford HAI data). These categories overlap with AI users but represent people who work with AI, not just use it."
+    a: "This combines two groups: (1) AI/ML engineers and data scientists working professionally in the field, sourced from LinkedIn labor market data via OECD, and (2) academic AI researchers publishing in the field, from Stanford HAI data. Singapore leads with 1.64% of its workforce in AI roles — 2.45x the global average. These people overlap with the 'AI users' category but represent people who build and develop AI, not just use it as a tool."
   },
   {
     q: "How are paid vs free users estimated?",
-    a: "Globally, ~19% of ChatGPT users pay for a subscription (Backlinko). We adjust per country: South Korea (#2 in paid subs) and high-income nations like UAE/Singapore skew higher. Developing nations skew lower. For China, 'paid' reflects domestic platform subscriptions, not ChatGPT."
+    a: "Globally, ~19% of ChatGPT users pay for a subscription (Backlinko, 2025). We adjust per country based on available data: South Korea is #2 globally in paid ChatGPT subscribers (Korea Herald), and high-income nations like UAE and Singapore skew higher. Developing nations skew lower due to pricing relative to local incomes. For China, 'paid' reflects domestic platform subscriptions (DeepSeek Pro, Doubao VIP, etc.), not ChatGPT. These are estimates — no single source provides precise paid/free breakdowns by country across all AI platforms."
   },
   {
     q: "Why is China's data different from other countries?",
-    a: "ChatGPT and most Western AI tools are banned in China. China's 602M gen AI users (CNNIC, Dec 2025) use domestic alternatives: DeepSeek, Qwen, Doubao, Ernie Bot, and others. The 42.8% adoption rate comes from CNNIC rather than Microsoft's telemetry."
+    a: "ChatGPT, Claude, Gemini, and most Western AI tools are blocked in China. China's gen AI users rely on domestic alternatives: DeepSeek, Qwen (Alibaba), Doubao (ByteDance), Ernie Bot (Baidu), and others. Microsoft's Windows telemetry largely misses these platforms — in fact, Microsoft's own report estimated China at only 16.3% adoption, while CNNIC's survey-based data (which captures domestic platform usage) shows roughly 2.5x that figure.\n\nWe use CNNIC data for China's adoption rate because it's the most authoritative source for a market where Western telemetry has a known blind spot. CNNIC surveys ~30,000 respondents across all 31 Chinese provinces semi-annually. China is also #1 globally in AI publications (23,695) and patents (35,423) in 2024."
   },
   {
     q: "How reliable are these numbers?",
-    a: "Adoption metrics vary significantly by methodology. The Microsoft report uses telemetry-adjusted estimates. Survey data (McKinsey, Salesforce) often shows higher rates because it samples knowledge workers. ChatGPT traffic share reflects only one platform. We've tried to use the most authoritative source for each metric and note caveats where relevant."
+    a: "These numbers represent the best available estimates, but they come from different methodologies that don't always agree:\n\n• Microsoft AI Diffusion Report: Telemetry-based. Covers 147 countries. Strong on relative cross-country comparisons, but systematically undercounts mobile-first and non-Western-platform usage.\n\n• Survey data (McKinsey, Salesforce, Ipsos): Self-reported. Often shows higher adoption rates because it samples knowledge workers specifically, not the general population. McKinsey's 2024 survey shows 78% of enterprises using AI.\n\n• CNNIC (China): Self-reported survey of ~30,000 people. Most authoritative for China but subject to standard survey biases and possible government incentives to show strong tech adoption.\n\n• DemandSage/SimilarWeb: Traffic estimates based on browser extensions and ISP partnerships, then modeled. Useful for relative platform comparisons but not precise user counts.\n\nWhere sources disagree, we've tried to use the most authoritative and methodologically sound source for each specific metric and country. All numbers should be treated as informed estimates, not precise measurements."
   },
 ];
 
@@ -205,7 +213,7 @@ const SOURCES = [
   {n:"CNBC/LinkedIn AI Talent Data", u:"https://www.cnbc.com/2025/04/11/linkedin-these-countries-have-a-high-concentration-of-ai-talent.html"},
   {n:"Visual Capitalist: Global AI Investment", u:"https://www.visualcapitalist.com/visualizing-global-ai-investment-by-country/"},
   {n:"McKinsey State of AI 2025", u:"https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-state-of-ai"},
-  {n:"CNNIC China Gen AI Users Report", u:"https://www.chinadaily.com.cn/a/202602/05/WS6984014ca310d6866eb37a16.html"},
+  {n:"CNNIC 57th Statistical Report on China's Internet (Dec 2025)", u:"https://english.www.gov.cn/archive/statistics/202602/05/content_WS698442cac6d00ca5f9a08edc.html"},
   {n:"Deloitte Gen AI in Asia Pacific", u:"https://www.deloitte.com/southeast-asia/en/Industries/technology/research/generative-ai-asia-pacific.html"},
   {n:"OECD AI Adoption Data (Jan 2026)", u:"https://www.oecd.org/en/about/news/announcements/2026/01/ai-use-by-individuals-surges-across-the-oecd-as-adoption-by-firms-continues-to-expand.html"},
   {n:"IMF AI Preparedness Index", u:"https://www.imf.org/external/datamapper/datasets/AIPI"},
@@ -213,6 +221,7 @@ const SOURCES = [
   {n:"Korea Herald: S.Korea Paid ChatGPT Users", u:"https://www.koreaherald.com/article/10500190"},
   {n:"Backlinko ChatGPT Stats", u:"https://backlinko.com/chatgpt-stats"},
   {n:"Rest of World: Gen AI Adoption", u:"https://restofworld.org/2026/countries-generative-ai-adoption/"},
+  {n:"Microsoft AI Diffusion Technical Paper (arXiv)", u:"https://arxiv.org/html/2511.02781v1"},
 ];
 
 // --- Utilities ---
@@ -635,9 +644,9 @@ function App() {
               <span style={{fontFamily:FM, fontSize:14, color:"#666", marginLeft:8, flexShrink:0, transition:"transform 0.2s", transform: faqOpen===i?"rotate(45deg)":"rotate(0)"}}>+</span>
             </button>
             {faqOpen === i && (
-              <p style={{fontFamily:FS, fontSize:12, color:"#666", lineHeight:1.6, marginTop:8, padding:"0 4px"}}>
+              <div style={{fontFamily:FS, fontSize:12, color:"#666", lineHeight:1.6, marginTop:8, padding:"0 4px", whiteSpace:"pre-line"}}>
                 {f.a}
-              </p>
+              </div>
             )}
           </div>
         ))}

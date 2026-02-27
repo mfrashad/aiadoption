@@ -8,7 +8,7 @@ Part of the [aiforgood.my](https://aiforgood.my) project — a hub for open-sour
 
 ## What is this?
 
-An interactive dot-grid visualization showing how AI adoption varies dramatically across countries — from the UAE at 64% to Nigeria at 7%. Each dot represents 0.25% of a country's population, color-coded by adoption category.
+An interactive dot-grid visualization showing how AI adoption varies dramatically across countries — from the UAE at 64% to Nigeria at 9.3%. Each dot represents 0.25% of a country's population, color-coded by adoption category.
 
 Inspired by [global-ai-adoption.netlify.app](https://global-ai-adoption.netlify.app/) which tracks global AI adoption over time. This project focuses on comparing adoption **by country**.
 
@@ -20,18 +20,18 @@ Inspired by [global-ai-adoption.netlify.app](https://global-ai-adoption.netlify.
 | Singapore | 60.9% | 3.7M | Southeast Asia |
 | France | 44.0% | 29.9M | Europe |
 | China | 42.8% | 603M | East Asia |
-| United Kingdom | 40.5% | 27.5M | Europe |
-| Australia | 38.9% | 10.5M | Oceania |
+| United Kingdom | 38.9% | 26.5M | Europe |
+| Australia | 36.9% | 10.0M | Oceania |
 | Canada | 35.0% | 14.3M | North America |
-| Malaysia | 32.0% | 10.9M | Southeast Asia |
-| Germany | 31.4% | 26.4M | Europe |
 | South Korea | 30.7% | 16.0M | East Asia |
+| Germany | 28.6% | 24.0M | Europe |
 | United States | 28.3% | 98.2M | North America |
-| Indonesia | 25.0% | 70.0M | Southeast Asia |
+| Malaysia | 19.7% | 6.7M | Southeast Asia |
 | Japan | 19.1% | 23.7M | East Asia |
-| India | 18.0% | 263M | South Asia |
-| Brazil | 16.0% | 34.6M | South America |
-| Nigeria | 7.0% | 16.1M | Africa |
+| Brazil | 17.1% | 36.9M | South America |
+| India | 15.7% | 229M | South Asia |
+| Indonesia | 12.7% | 35.6M | Southeast Asia |
+| Nigeria | 9.3% | 21.4M | Africa |
 
 ## API
 
@@ -91,7 +91,7 @@ Each country object contains:
 - [Stanford HAI AI Index Report 2025](https://hai.stanford.edu/ai-index/2025-ai-index-report) — AI investment, publications, models
 - [DemandSage ChatGPT Statistics](https://www.demandsage.com/chatgpt-statistics/) — ChatGPT traffic by country
 - [CNBC/LinkedIn AI Talent Data](https://www.cnbc.com/2025/04/11/linkedin-these-countries-have-a-high-concentration-of-ai-talent.html) — AI workforce
-- [CNNIC](https://www.chinadaily.com.cn/a/202602/05/WS6984014ca310d6866eb37a16.html) — China domestic gen AI users
+- [CNNIC 57th Statistical Report](https://english.www.gov.cn/archive/statistics/202602/05/content_WS698442cac6d00ca5f9a08edc.html) — China domestic gen AI users
 - [UN World Population Prospects](https://population.un.org/wpp/) — population data
 
 See the full list of 14 sources in [`api/v1/countries.json`](api/v1/countries.json).
